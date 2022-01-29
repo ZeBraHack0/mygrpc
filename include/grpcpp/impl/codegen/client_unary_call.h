@@ -27,6 +27,7 @@
 #include <grpcpp/impl/codegen/config.h>
 #include <grpcpp/impl/codegen/core_codegen_interface.h>
 #include <grpcpp/impl/codegen/status.h>
+#include "inci_lib/trans/protoTrans.h"
 
 namespace grpc {
 
@@ -49,6 +50,9 @@ Status BlockingUnaryCall(ChannelInterface* channel, const RpcMethod& method,
                 "Invalid input message specification");
   static_assert(std::is_base_of<BaseOutputMessage, OutputMessage>::value,
                 "Invalid output message specification");
+  protoTrans::InciStub inci_stub("localhost:50051");
+  bool flag = inci_stub.IncSend(request, result);
+  if(flag)return Status();
   return BlockingUnaryCallImpl<BaseInputMessage, BaseOutputMessage>(
              channel, method, context, request, result)
       .status();

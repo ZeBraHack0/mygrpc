@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <thread>
 
-#include "comm.h"
+#include "inci_lib/lib/comm.h"
 
 namespace comm{
 CommClient::CommClient(int k, int length){

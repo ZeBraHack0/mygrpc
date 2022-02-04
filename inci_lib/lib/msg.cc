@@ -1,4 +1,4 @@
-#include "msg.h"
+#include "inci_lib/lib/msg.h"
 
 
 int commMsg(int key, int msgflag) {

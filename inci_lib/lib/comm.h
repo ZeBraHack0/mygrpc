@@ -3,7 +3,7 @@
 #include <signal.h>
 #include <stdlib.h>
 
-#include "msg.h"
+#include "inci_lib/lib/msg.h"
 
 #define SERVERID -1
 

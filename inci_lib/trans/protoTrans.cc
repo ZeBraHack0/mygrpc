@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
-#include "lib/comm.h"
-#include "protoTrans.h"
-#include "quantize.h"
+#include "inci_lib/lib/comm.h"
+#include "inci_lib/trans/protoTrans.h"
+#include "inci_lib/trans/quantize.h"
 
 
 namespace protoTrans {
@@ -57,7 +57,7 @@ bool InciStub::IncSend(google::protobuf::Message *request, google::protobuf::Mes
         assert(sz>0);
         size_t bytes = request->ByteSizeLong();
 
-        if(hasInit == false)initService(1,0,bytes);
+        if(hasInit == false)initService(1,0,bytes,1,2000,0);
         else assert(op==1);
 
         char* data;

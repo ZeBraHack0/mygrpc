@@ -3957,7 +3957,7 @@ grpc_cc_library(
     deps = [
         "grpc++_internal_hdrs_only",
         "grpc_codegen",
-        "////inci_lib:trans:inci_stub"
+        "inci_lib:trans:inci_stub"
     ],
 )
 

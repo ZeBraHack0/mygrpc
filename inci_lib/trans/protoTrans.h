@@ -16,7 +16,7 @@ class InciStub {
 public:
     InciStub(std::string tar_str);
     ~InciStub();
-    bool IncSend(google::protobuf::Message *request, google::protobuf::Message *reply);
+    bool IncSend(const google::protobuf::Message &request, google::protobuf::Message *reply);
 private:
     int globalId;
     int memSz;

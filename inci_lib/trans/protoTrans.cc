@@ -36,8 +36,8 @@ void InciStub::initService(int new_op, int ptype, int dataLength, int globalid, 
   hasInit = true;
 }
 
-bool InciStub::IncSend(google::protobuf::Message *request, google::protobuf::Message *reply){
-  const google::protobuf::Descriptor* gdes = request->GetDescriptor();
+bool InciStub::IncSend(const google::protobuf::Message &request, google::protobuf::Message *reply){
+  const google::protobuf::Descriptor* gdes = request.GetDescriptor();
   int fieldNum = gdes->field_count();
   bool sendSucc = false;
   printf("inci send!\n");
@@ -48,21 +48,21 @@ bool InciStub::IncSend(google::protobuf::Message *request, google::protobuf::Mes
       const google::protobuf::Descriptor* des = gfdes->message_type();
       printf("%s\n", des->name().c_str());
       if(des->name() == "aggtrArray"){
-        const google::protobuf::Reflection* gref = request->GetReflection();
-        google::protobuf::Message * subRequest = gref->MutableMessage(request, gfdes);
+        const google::protobuf::Reflection* gref = request.GetReflection();
+        const google::protobuf::Message & subRequest = gref->GetMessage(request, gfdes);
         const google::protobuf::FieldDescriptor* fdes = des->field(0);
         assert(fdes != nullptr);  // in case of typo or something.
-         const google::protobuf::Reflection* ref = subRequest->GetReflection();
-        int sz = ref->FieldSize(*subRequest, fdes);
+        const google::protobuf::Reflection* ref = subRequest.GetReflection();
+        int sz = ref->FieldSize(subRequest, fdes);
         assert(sz>0);
-        size_t bytes = request->ByteSizeLong();
+        size_t bytes = request.ByteSizeLong();
 
         if(hasInit == false)initService(1,0,bytes,1,2000,0);
         else assert(op==1);
 
         char* data;
         data = (char*)malloc(bytes);
-        auto fieldRef = ref->GetRepeatedField<int>(*subRequest, fdes);
+        auto fieldRef = ref->GetRepeatedField<int>(subRequest, fdes);
         memcpy(data, &(fieldRef[0]), sz*sizeof(int));
         // switch (fdes->type())
         // {
@@ -96,12 +96,8 @@ bool InciStub::IncSend(google::protobuf::Message *request, google::protobuf::Mes
         //     break;
         //   }
         // }
-        
-        ref->ClearField(subRequest, fdes);
-        size_t tmpBytes = request->ByteSizeLong();
-        request->SerializeToArray(data+sz*sizeof(int), tmpBytes);
 
-        comm::MsgArgs *args = createArgs(globalId, sizeof(int)*sz, 1, 2000, 0, tmpBytes);
+        comm::MsgArgs *args = createArgs(globalId, sizeof(int)*sz, 1, 2000, 0, 0);
         printf("inci send data! %d %d\n", globalId, (int)(sizeof(int)*sz));
         client->PushPull(data, args);
         free(args);

@@ -26,7 +26,7 @@ private:
     int dataLength;
     bool hasInit;
     comm::CommClient* client;
-    void initService(int op, int ptype, int dataLength);
+    void initService(int new_op, int ptype, int dataLength, int globalid, int memsz, int memoffset);
 };
 }
 #endif /* _PROTOTRANS_H*/

@@ -40,6 +40,7 @@ bool InciStub::IncSend(google::protobuf::Message *request, google::protobuf::Mes
   const google::protobuf::Descriptor* gdes = request->GetDescriptor();
   int fieldNum = gdes->field_count();
   bool sendSucc = false;
+  printf("inci send!\n");
   for(int i = 0; i<fieldNum; i++){
     const google::protobuf::FieldDescriptor* gfdes = gdes->field(i);
     assert(gfdes != nullptr);  // in case of typo or something.

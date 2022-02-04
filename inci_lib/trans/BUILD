@@ -9,7 +9,7 @@ cc_library(
     ],
     defines = ["BAZEL_BUILD"],
     deps = [
-        "//inci_lib:lib:comm_lib",
+        "//inci_lib/lib:comm_lib",
     ],
     external_deps = [
         "protobuf_headers",

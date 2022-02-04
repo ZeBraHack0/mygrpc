@@ -3873,6 +3873,47 @@ grpc_cc_library(
     ],
 )
 
+
+grpc_cc_library(
+    name = "msg_lib",
+    srcs = [
+        "inci_lib/lib/msg.cc",
+    ],
+    hdrs = [
+        "inci_lib/lib/msg.h",
+        ],
+    visibility = ["@grpc:public"],
+)
+
+grpc_cc_library(
+    name = "comm_lib",
+    srcs = [
+        "inci_lib/lib/comm.cc",
+    ],
+    hdrs = [
+        "inci_lib/lib/comm.h",
+        ],
+    visibility = ["@grpc:public"],
+    deps = [
+        "msg_lib",
+    ],
+)
+
+grpc_cc_library(
+    name = "inci_stub",
+    srcs = ["inci_lib/trans/protoTrans.cc"],
+    hdrs = ["inci_lib/trans/protoTrans.h",
+            "inci_lib/trans/quantize.h",
+    ],
+    visibility = ["@grpc:public"],
+    deps = [
+        "comm_lib",
+    ],
+    external_deps = [
+        "protobuf_headers",
+    ],
+)
+
 grpc_cc_library(
     name = "grpc++_codegen_base",
     language = "c++",
@@ -3957,7 +3998,7 @@ grpc_cc_library(
     deps = [
         "grpc++_internal_hdrs_only",
         "grpc_codegen",
-        "//inci_lib/trans:inci_stub"
+        "inci_stub"
     ],
 )
 

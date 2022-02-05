@@ -7,14 +7,13 @@
 
 namespace protoTrans {
 
-comm::MsgArgs* createArgs(int key, int dataLength, int worker_num, int mem_sz, int mem_offset, int payload){
+comm::MsgArgs* createArgs(int key, int dataLength, int worker_num, int mem_sz, int mem_offset){
   comm::MsgArgs *args = (comm::MsgArgs *)malloc(sizeof(comm::MsgArgs));
   memcpy(args->margs, &key, sizeof(int));
   memcpy(args->margs+sizeof(int), &dataLength, sizeof(int));
   memcpy(args->margs+2*sizeof(int), &worker_num, sizeof(int));
   memcpy(args->margs+3*sizeof(int), &mem_sz, sizeof(int));
   memcpy(args->margs+4*sizeof(int), &mem_offset, sizeof(int));
-  memcpy(args->margs+5*sizeof(int), &payload, sizeof(int));
   return args;
 }
 
@@ -55,13 +54,12 @@ bool InciStub::IncSend(const google::protobuf::Message &request, google::protobu
         const google::protobuf::Reflection* ref = subRequest.GetReflection();
         int sz = ref->FieldSize(subRequest, fdes);
         assert(sz>0);
-        size_t bytes = request.ByteSizeLong();
 
-        if(hasInit == false)initService(1,0,bytes,1,2000,0);
+        if(hasInit == false)initService(1,0,sz*sizeof(int),1,2000,0);
         else assert(op==1);
 
         char* data;
-        data = (char*)malloc(bytes);
+        data = (char*)malloc(sz*sizeof(int));
         auto fieldRef = ref->GetRepeatedField<int>(subRequest, fdes);
         memcpy(data, &(fieldRef[0]), sz*sizeof(int));
         // switch (fdes->type())
@@ -97,7 +95,7 @@ bool InciStub::IncSend(const google::protobuf::Message &request, google::protobu
         //   }
         // }
 
-        comm::MsgArgs *args = createArgs(globalId, sizeof(int)*sz, 1, 2000, 0, 0);
+        comm::MsgArgs *args = createArgs(globalId, sizeof(int)*sz, 1, 2000, 0);
         printf("inci send data! %d %d\n", globalId, (int)(sizeof(int)*sz));
         client->PushPull(data, args);
         free(args);

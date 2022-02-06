@@ -70,6 +70,8 @@ class Channel final : public ::grpc::ChannelInterface,
   /// not available.
   std::string GetServiceConfigJSON() const;
 
+  protoTrans::InciStub* inci_stub;
+
  private:
   template <class InputMessage, class OutputMessage>
   friend class ::grpc::internal::BlockingUnaryCallImpl;
@@ -121,7 +123,6 @@ class Channel final : public ::grpc::ChannelInterface,
       std::unique_ptr<::grpc::experimental::ClientInterceptorFactoryInterface>>
       interceptor_creators_;
 
-    protoTrans::InciStub* inci_stub;
 };
 
 }  // namespace grpc

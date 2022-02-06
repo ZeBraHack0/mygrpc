@@ -84,8 +84,8 @@ bool InciStub::IncSend(const google::protobuf::Message &request, google::protobu
               const google::protobuf::Reflection* replyFieldRefl = replyField->GetReflection();
               auto replyArray = replyFieldRefl->GetRepeatedField<int>(*replyField, replyFieldFdes);
               replyArray.Resize(sz, 0);
-              printf("extend reply array:%d\n", replyArray[0]);
               memcpy(&(replyArray[0]), data, sz*sizeof(int));
+              printf("extend reply array:%d\n", replyArray[sz-1]);
               break;
             }
           }

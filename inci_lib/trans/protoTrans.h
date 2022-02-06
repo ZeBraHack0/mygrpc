@@ -14,7 +14,7 @@ namespace protoTrans {
 
 class InciStub {
 public:
-    InciStub(std::string tar_str);
+    InciStub(const std::string& tar_str);
     ~InciStub();
     bool IncSend(const google::protobuf::Message &request, google::protobuf::Message *reply);
 private:

@@ -50,8 +50,7 @@ Status BlockingUnaryCall(ChannelInterface* channel, const RpcMethod& method,
                 "Invalid input message specification");
   static_assert(std::is_base_of<BaseOutputMessage, OutputMessage>::value,
                 "Invalid output message specification");
-  protoTrans::InciStub inci_stub("localhost:50051");
-  bool flag = inci_stub.IncSend(request, result);
+  bool flag = channel->inci_stub->IncSend(request, result);
   if(flag)return Status();
   return BlockingUnaryCallImpl<BaseInputMessage, BaseOutputMessage>(
              channel, method, context, request, result)

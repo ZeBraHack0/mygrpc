@@ -17,7 +17,7 @@ comm::MsgArgs* createArgs(int key, int dataLength, int worker_num, int mem_sz, i
   return args;
 }
 
-InciStub::InciStub(std::string target_str){
+InciStub::InciStub(const std::string& target_str){
     hasInit = false;
 }
 

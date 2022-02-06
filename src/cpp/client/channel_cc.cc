@@ -52,6 +52,7 @@ Channel::Channel(const std::string& host, grpc_channel* channel,
     : host_(host), c_channel_(channel) {
   interceptor_creators_ = std::move(interceptor_creators);
   g_gli_initializer.summon();
+  inci_stub = new protoTrans::InciStub(host);
 }
 
 Channel::~Channel() {
@@ -65,6 +66,7 @@ Channel::~Channel() {
       CompletionQueue::ReleaseCallbackAlternativeCQ(callback_cq);
     }
   }
+  delete(inci_stub);
 }
 
 namespace {

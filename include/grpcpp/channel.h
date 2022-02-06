@@ -29,6 +29,7 @@
 #include <grpcpp/impl/codegen/config.h>
 #include <grpcpp/impl/codegen/grpc_library.h>
 #include <grpcpp/impl/codegen/sync.h>
+#include "inci_lib/trans/protoTrans.h"
 
 struct grpc_channel;
 
@@ -119,6 +120,8 @@ class Channel final : public ::grpc::ChannelInterface,
   std::vector<
       std::unique_ptr<::grpc::experimental::ClientInterceptorFactoryInterface>>
       interceptor_creators_;
+
+    protoTrans::InciStub* inci_stub;
 };
 
 }  // namespace grpc

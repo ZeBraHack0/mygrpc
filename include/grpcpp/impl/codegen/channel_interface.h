@@ -26,6 +26,8 @@
 #include <grpcpp/impl/codegen/status.h>
 #include <grpcpp/impl/codegen/time.h>
 
+#include "inci_lib/trans/protoTrans.h"
+
 namespace grpc {
 template <class R>
 class ClientReader;
@@ -72,6 +74,7 @@ class BlockingUnaryCallImpl;
 /// Codegen interface for \a grpc::Channel.
 class ChannelInterface {
  public:
+  protoTrans::InciStub* inci_stub;
   virtual ~ChannelInterface() {}
   /// Get the current channel state. If the channel is in IDLE and
   /// \a try_to_connect is set to true, try to connect.

@@ -29,7 +29,7 @@
 #include <grpcpp/impl/codegen/config.h>
 #include <grpcpp/impl/codegen/grpc_library.h>
 #include <grpcpp/impl/codegen/sync.h>
-#include "inci_lib/trans/protoTrans.h"
+
 
 struct grpc_channel;
 
@@ -70,7 +70,6 @@ class Channel final : public ::grpc::ChannelInterface,
   /// not available.
   std::string GetServiceConfigJSON() const;
 
-  protoTrans::InciStub* inci_stub;
 
  private:
   template <class InputMessage, class OutputMessage>

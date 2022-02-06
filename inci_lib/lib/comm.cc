@@ -43,6 +43,7 @@ void CommClient::PushPull(char* data, struct MsgArgs* args){
     //printf("[comm]copy data success!\n");
     sendMsg(msgids, 1, mtext);
     recvMsg(msgidr, 1, mresponse);
+    memcpy(data, shm, curLen);
     printf("[comm]push and pull data success!\n");
     free(mtext);
     free(mresponse);

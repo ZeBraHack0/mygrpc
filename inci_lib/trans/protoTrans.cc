@@ -36,23 +36,22 @@ void InciStub::initService(int new_op, int ptype, int dataLength, int globalid, 
 }
 
 bool InciStub::IncSend(const google::protobuf::Message &request, google::protobuf::Message *reply){
-  const google::protobuf::Descriptor* gdes = request.GetDescriptor();
-  int fieldNum = gdes->field_count();
+  const google::protobuf::Descriptor* requestDes = request.GetDescriptor();
+  int requestFieldNum = requestDes->field_count();
   bool sendSucc = false;
-  printf("inci send!\n");
-  for(int i = 0; i<fieldNum; i++){
-    const google::protobuf::FieldDescriptor* gfdes = gdes->field(i);
-    assert(gfdes != nullptr);  // in case of typo or something.
-    if(gfdes->type()==google::protobuf::FieldDescriptor::TYPE_MESSAGE){
-      const google::protobuf::Descriptor* des = gfdes->message_type();
-      printf("%s\n", des->name().c_str());
-      if(des->name() == "aggtrArray"){
-        const google::protobuf::Reflection* gref = request.GetReflection();
-        const google::protobuf::Message & subRequest = gref->GetMessage(request, gfdes);
-        const google::protobuf::FieldDescriptor* fdes = des->field(0);
-        assert(fdes != nullptr);  // in case of typo or something.
-        const google::protobuf::Reflection* ref = subRequest.GetReflection();
-        int sz = ref->FieldSize(subRequest, fdes);
+  for(int i = 0; i<requestFieldNum; i++){
+    const google::protobuf::FieldDescriptor* requestFdes = requestDes->field(i);
+    assert(requestFdes != nullptr);  // in case of typo or something.
+    if(requestFdes->type()==google::protobuf::FieldDescriptor::TYPE_MESSAGE){
+      const google::protobuf::Descriptor* requestFieldDes = requestFdes->message_type();
+      printf("inci field type in request: %s\n", requestFieldDes->name().c_str());
+      if(requestFieldDes->name() == "aggtrArray"){
+        const google::protobuf::Reflection* requestRefl = request.GetReflection();
+        const google::protobuf::Message & requestField = requestRefl->GetMessage(request, requestFdes);
+        const google::protobuf::FieldDescriptor* requestFieldFdes = requestFieldDes->field(0); //data field of aggtrArray
+        assert(requestFieldFdes != nullptr);  // in case of typo or something.
+        const google::protobuf::Reflection* requestFieldRefl = requestField.GetReflection();
+        int sz = requestFieldRefl->FieldSize(requestField, requestFieldFdes);
         assert(sz>0);
 
         if(hasInit == false)initService(1,0,sz*sizeof(int),1,2000,0);
@@ -60,45 +59,37 @@ bool InciStub::IncSend(const google::protobuf::Message &request, google::protobu
 
         char* data;
         data = (char*)malloc(sz*sizeof(int));
-        auto fieldRef = ref->GetRepeatedField<int>(subRequest, fdes);
-        memcpy(data, &(fieldRef[0]), sz*sizeof(int));
-        // switch (fdes->type())
-        // {
-        // case google::protobuf::FieldDescriptor::TYPE_SFIXED32:
-        //   {
-        //     data = (char*)malloc(sizeof(int)*sz);
-        //     auto fieldRef = ref->GetRepeatedField<int>(*request, fdes);
-        //     memcpy(data, &(fieldRef[0]), sz*sizeof(int));
-        //     break;
-        //   }
-        // case google::protobuf::FieldDescriptor::TYPE_FLOAT:
-        //   {
-        //     data = (char*)malloc(sizeof(float)*sz);
-        //     auto fieldRef = ref->GetRepeatedField<float>(*request, fdes);
-        //     memcpy(data, &(fieldRef[0]), sz*sizeof(float));
-        //     quan::quantizeNaive(data, sz);
-        //     break;
-        //   }
-        // case google::protobuf::FieldDescriptor::TYPE_FIXED32:
-        //   {
-        //     data = (char*)malloc(sizeof(uint32_t)*sz);
-        //     auto fieldRef = ref->GetRepeatedField<uint32_t>(*request, fdes);
-        //     memcpy(data, &(fieldRef[0]), sz*sizeof(uint32_t));
-        //     quan::signalNaive(data, sz);
-        //     break;
-        //   }
-        // default:
-        //   {
-        //     printf("error type!\n");
-        //     exit(-1);
-        //     break;
-        //   }
-        // }
+        auto requestArray = requestFieldRefl->GetRepeatedField<int>(requestField, requestFieldFdes);
+        memcpy(data, &(requestArray[0]), sz*sizeof(int));
 
         comm::MsgArgs *args = createArgs(globalId, sizeof(int)*sz, 1, 2000, 0);
         printf("inci send data! %d %d\n", globalId, (int)(sizeof(int)*sz));
         client->PushPull(data, args);
         free(args);
+
+        // fill reply
+        const google::protobuf::Descriptor* replyDes = reply->GetDescriptor();
+        int replyFieldNum = replyDes->field_count();
+        for(int i = 0; i<replyFieldNum; i++){
+          const google::protobuf::FieldDescriptor* replyFdes = replyDes->field(i);
+          assert(replyFdes != nullptr);  // in case of typo or something.
+          if(replyFdes->type()==google::protobuf::FieldDescriptor::TYPE_MESSAGE){
+            const google::protobuf::Descriptor* replyFieldDes = replyFdes->message_type();
+            printf("inci field type in reply: %s\n", replyFieldDes->name().c_str());
+            if(replyFieldDes->name() == "aggtrArray"){
+              const google::protobuf::Reflection* replyRefl = reply->GetReflection();
+              google::protobuf::Message * replyField = replyRefl->MutableMessage(reply, replyFdes);
+              const google::protobuf::FieldDescriptor* replyFieldFdes = replyFieldDes->field(0); //data field of aggtrArray
+              assert(replyFieldFdes != nullptr);  // in case of typo or something.
+              const google::protobuf::Reflection* replyFieldRefl = replyField->GetReflection();
+              auto replyArray = replyFieldRefl->GetRepeatedField<int>(*replyField, replyFieldFdes);
+              replyArray.Resize(sz*sizeof(int), 0);
+              memcpy(&(replyArray[0]), data, sz*sizeof(int));
+              break;
+            }
+          }
+        }
+
 
         free(data);
         sendSucc = true;

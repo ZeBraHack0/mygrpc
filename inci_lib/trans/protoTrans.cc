@@ -5,6 +5,7 @@
 #include "inci_lib/trans/quantize.h"
 
 
+
 namespace protoTrans {
 
 comm::MsgArgs* createArgs(int key, int dataLength, int worker_num, int mem_sz, int mem_offset){
@@ -82,10 +83,9 @@ bool InciStub::IncSend(const google::protobuf::Message &request, google::protobu
               const google::protobuf::FieldDescriptor* replyFieldFdes = replyFieldDes->field(0); //data field of aggtrArray
               assert(replyFieldFdes != nullptr);  // in case of typo or something.
               const google::protobuf::Reflection* replyFieldRefl = replyField->GetReflection();
-              auto replyArray = replyFieldRefl->GetRepeatedField<int>(*replyField, replyFieldFdes);
-              replyArray.Resize(sz, 0);
-              memcpy(&(replyArray[0]), data, sz*sizeof(int));
-              printf("extend reply array:%d\n", replyArray[sz-1]);
+              auto replyArray = replyFieldRefl->MutableRepeatedField<int>(replyField, replyFieldFdes);
+              replyArray->Resize(sz, 0);
+              memcpy(&((*replyArray)[0]), data, sz*sizeof(int));
               break;
             }
           }

@@ -53,6 +53,8 @@ bool InciStub::IncSend(const google::protobuf::Message &request, google::protobu
         const google::protobuf::FieldDescriptor* requestFieldFdes = requestFieldDes->field(0); //data field of aggtrArray
         assert(requestFieldFdes != nullptr);  // in case of typo or something.
         const google::protobuf::Reflection* requestFieldRefl = requestField.GetReflection();
+        const google::protobuf::FieldDescriptor* cntForwardFdes = requestFieldDes->field(1); //data field of aggtrArray
+        int cntForward = requestFieldRefl->GetInt32(requestField, cntForwardFdes);
         int sz = requestFieldRefl->FieldSize(requestField, requestFieldFdes);
         assert(sz>0);
 
@@ -64,7 +66,7 @@ bool InciStub::IncSend(const google::protobuf::Message &request, google::protobu
         auto requestArray = requestFieldRefl->GetRepeatedField<int>(requestField, requestFieldFdes);
         memcpy(data, &(requestArray[0]), sz*sizeof(int));
 
-        comm::MsgArgs *args = createArgs(globalId, sizeof(int)*sz, 1, memOffset, memSz, op);
+        comm::MsgArgs *args = createArgs(globalId, sizeof(int)*sz, cntForward, memOffset, memSz, op);
         printf("inci send data! %d %d\n", globalId, (int)(sizeof(int)*sz));
         client->PushPull(data, args);
         free(args);
@@ -101,6 +103,8 @@ bool InciStub::IncSend(const google::protobuf::Message &request, google::protobu
         const google::protobuf::FieldDescriptor* requestFieldFdes = requestFieldDes->field(0); //data field of aggtrArray
         assert(requestFieldFdes != nullptr);  // in case of typo or something.
         const google::protobuf::Reflection* requestFieldRefl = requestField.GetReflection();
+        const google::protobuf::FieldDescriptor* cntForwardFdes = requestFieldDes->field(1); //data field of aggtrArray
+        int cntForward = requestFieldRefl->GetInt32(requestField, cntForwardFdes);
         int sz = requestFieldRefl->FieldSize(requestField, requestFieldFdes);
         assert(sz>0);
 
@@ -112,7 +116,7 @@ bool InciStub::IncSend(const google::protobuf::Message &request, google::protobu
         auto requestArray = requestFieldRefl->GetRepeatedField<int>(requestField, requestFieldFdes);
         memcpy(data, &(requestArray[0]), sz*sizeof(int));
 
-        comm::MsgArgs *args = createArgs(globalId, sizeof(int)*sz, 1, 2000, 0, op);
+        comm::MsgArgs *args = createArgs(globalId, sizeof(int)*sz, cntForward, 2000, 0, op);
         printf("inci send data! %d %d\n", globalId, (int)(sizeof(int)*sz));
         client->PushPull(data, args);
         free(args);

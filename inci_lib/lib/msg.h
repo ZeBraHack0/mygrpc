@@ -11,7 +11,7 @@
 #include <sys/sem.h>
 
 #define CHMOD_ID  0777
-#define MSGSIZE 28
+#define MSGSIZE 36
 
 #define SERVER_TYPE 1   // 服务端发送消息类型
 #define CLIENT_TYPE 2   // 客户端发送消息类型

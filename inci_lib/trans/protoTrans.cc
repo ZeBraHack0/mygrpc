@@ -28,7 +28,7 @@ InciStub::InciStub(const std::string& target_str){
 }
 
 InciStub::~InciStub(){
-    delete(client);
+    if(hasInit)delete(client);
 }
 
 void InciStub::initService(int new_op, int ptype, int datalength, int globalid, int memsz, int memoffset){
